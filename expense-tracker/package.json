@@ -1,0 +1,14 @@
+{
+  "name": "smart-expense-tracker",
+  "version": "1.0.0",
+  "description": "Modern expense tracking application with dark theme UI",
+  "scripts": {
+    "install-backend": "cd backend && npm install",
+    "install-frontend": "cd frontend && npm install",
+    "build": "npm run install-backend && npm run install-frontend && cd frontend && npm run build",
+    "start": "cd backend && npm start"
+  },
+  "keywords": ["expense", "tracker", "finance", "mongodb", "react"],
+  "author": "Teja Kumar",
+  "license": "MIT"
+}
