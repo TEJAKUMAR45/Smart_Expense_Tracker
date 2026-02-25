@@ -2,77 +2,67 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-  background-color: #f8fafc;
-  line-height: 1.6;
-}
-
-/* Custom scrollbar */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 3px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* Smooth animations */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #0a192f 0%, #112240 50%, #1a365d 100%);
+    color: #E5E7EB;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
   }
 }
 
-.animate-fadeInUp {
-  animation: fadeInUp 0.5s ease-out;
-}
+@layer components {
+  /* Glass Card */
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
 
-/* Focus styles */
-input:focus,
-select:focus,
-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-}
+  /* Gradient Button */
+  .btn-gradient {
+    @apply bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold;
+    @apply px-6 py-3 rounded-xl transition-all duration-300;
+    @apply hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/50;
+  }
 
-/* Responsive grid improvements */
-@media (max-width: 768px) {
-  .grid {
-    gap: 1rem;
+  /* Sidebar Link */
+  .sidebar-link {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200;
+    @apply text-gray-400 hover:text-white hover:bg-white/10;
+  }
+
+  .sidebar-link.active {
+    @apply bg-gradient-to-r from-cyan-500/20 to-blue-600/20 text-white border-l-4 border-cyan-500;
+  }
+
+  /* Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-white/5 rounded-full;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-white/20 rounded-full hover:bg-white/30;
   }
 }
 
-/* Button hover effects */
-button {
-  transition: all 0.2s ease-in-out;
-}
+@layer utilities {
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-button:hover {
-  transform: translateY(-1px);
-}
-
-button:active {
-  transform: translateY(0);
+  .animate-fadeIn {
+    animation: fadeIn 0.4s ease-out;
+  }
 }
