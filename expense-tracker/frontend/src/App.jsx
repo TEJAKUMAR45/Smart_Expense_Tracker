@@ -4,7 +4,7 @@ import ExpenseForm from './components/ExpenseForm'
 import ExpenseList from './components/ExpenseList'
 import ExpenseChart from './components/ExpenseChart'
 
-const API_URL = 'http://localhost:5000/api/expenses'
+const API_URL = '/api/expenses'
 
 function App() {
   const [expenses, setExpenses] = useState([])
@@ -100,7 +100,7 @@ function App() {
     
     // Date filter
     if (filterDate) {
-      filtered = filtered.filter(expense => expense.date === filterDate)
+      filtered = filtered.filter(expense => expense.date.slice(0, 10) === filterDate)
     }
     
     setFilteredExpenses(filtered)
@@ -112,6 +112,7 @@ function App() {
       setExpenses([response.data, ...expenses])
     } catch (error) {
       console.error('Error adding expense:', error)
+      alert('Failed to add expense: ' + (error.response?.data?.message || error.message))
     }
   }
 
@@ -301,24 +302,41 @@ function App() {
                       <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
                         <span className="text-sm text-gray-400">Today's Spending</span>
                         <span className="text-sm font-bold text-emerald-400">
-                          ${expenses.filter(e => new Date(e.date).toDateString() === new Date().toDateString()).reduce((sum, e) => sum + e.amount, 0).toFixed(2)}
+                          ${(() => {
+                            const today = new Date()
+                            return expenses.filter(e => {
+                              const d = new Date(e.date)
+                              return d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth() && d.getDate() === today.getDate()
+                            }).reduce((sum, e) => sum + e.amount, 0).toFixed(2)
+                          })()}
                         </span>
                       </div>
                       <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
                         <span className="text-sm text-gray-400">This Week</span>
                         <span className="text-sm font-bold text-blue-400">
-                          ${expenses.filter(e => {
-                            const expenseDate = new Date(e.date)
+                          ${(() => {
                             const today = new Date()
-                            const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
-                            return expenseDate >= weekAgo && expenseDate <= today
-                          }).reduce((sum, e) => sum + e.amount, 0).toFixed(2)}
+                            today.setHours(23, 59, 59, 999)
+                            const weekAgo = new Date()
+                            weekAgo.setDate(weekAgo.getDate() - 7)
+                            weekAgo.setHours(0, 0, 0, 0)
+                            return expenses.filter(e => {
+                              const d = new Date(e.date)
+                              return d >= weekAgo && d <= today
+                            }).reduce((sum, e) => sum + e.amount, 0).toFixed(2)
+                          })()}
                         </span>
                       </div>
                       <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
                         <span className="text-sm text-gray-400">Top Category</span>
                         <span className="text-sm font-bold text-purple-400">
-                          {categoryBreakdown.length > 0 ? categoryBreakdown[0].category : 'None'}
+                          {(() => {
+                            const allBreakdown = categories.slice(1).map(category => ({
+                              category,
+                              total: expenses.filter(e => e.category === category).reduce((sum, e) => sum + e.amount, 0)
+                            })).filter(i => i.total > 0).sort((a, b) => b.total - a.total)
+                            return allBreakdown.length > 0 ? allBreakdown[0].category : 'None'
+                          })()}
                         </span>
                       </div>
                     </div>

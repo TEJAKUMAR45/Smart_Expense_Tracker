@@ -40,15 +40,25 @@ function ExpenseChart({ expenses }) {
     return null
   }
 
+  const total = categoryData.reduce((sum, cat) => sum + cat.value, 0)
+
+  // Assign colors before sorting so pie and legend colors always match
+  const coloredData = categoryData.map((item, index) => ({
+    ...item,
+    color: COLORS[index % COLORS.length]
+  }))
+
+  const sortedData = [...coloredData].sort((a, b) => b.value - a.value)
+
   return (
     <div className="glass-card p-6">
       <h2 className="text-lg font-semibold text-white mb-6">Spending Analytics</h2>
-      
+
       <div className="mb-6">
         <ResponsiveContainer width="100%" height={280}>
           <PieChart>
             <Pie
-              data={categoryData}
+              data={coloredData}
               cx="50%"
               cy="50%"
               labelLine={false}
@@ -58,39 +68,31 @@ function ExpenseChart({ expenses }) {
               strokeWidth={2}
               stroke="#0F172A"
             >
-              {categoryData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              {coloredData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
             <Tooltip content={<CustomTooltip />} />
           </PieChart>
         </ResponsiveContainer>
       </div>
-      
+
       <div className="space-y-2">
-        {categoryData
-          .sort((a, b) => b.value - a.value)
-          .map((item, index) => {
-            const total = categoryData.reduce((sum, cat) => sum + cat.value, 0)
-            const percentage = ((item.value / total) * 100).toFixed(1)
-            
-            return (
-              <div key={item.name} className="flex items-center justify-between p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-colors">
-                <div className="flex items-center gap-3">
-                  <div 
-                    className="w-3 h-3 rounded-full" 
-                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                  ></div>
-                  <span className="text-sm font-medium text-gray-300">{item.name}</span>
-                </div>
-                <div className="text-right">
-                  <div className="text-sm font-bold text-white">${item.value.toFixed(2)}</div>
-                  <div className="text-xs text-gray-400">{percentage}%</div>
-                </div>
+        {sortedData.map((item) => {
+          const percentage = ((item.value / total) * 100).toFixed(1)
+          return (
+            <div key={item.name} className="flex items-center justify-between p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-colors">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
+                <span className="text-sm font-medium text-gray-300">{item.name}</span>
               </div>
-            )
-          })
-        }
+              <div className="text-right">
+                <div className="text-sm font-bold text-white">${item.value.toFixed(2)}</div>
+                <div className="text-xs text-gray-400">{percentage}%</div>
+              </div>
+            </div>
+          )
+        })}
       </div>
     </div>
   )
